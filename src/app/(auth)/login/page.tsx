@@ -17,6 +17,9 @@ import {
 } from "@/components/ui/card";
 import { MessageSquare, UsersRound } from "lucide-react";
 
+const DEMO_EMAIL = "demo1@seloraos.online";
+const DEMO_PASSWORD = "test@123";
+
 // `useSearchParams` opts the component out of static prerendering
 // unless it sits under a Suspense boundary. We split the form into
 // a child component so the outer page can prerender the chrome
@@ -46,6 +49,16 @@ function LoginPageInner() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    await signIn(email, password);
+  };
+
+  const handleTryDemo = async () => {
+    setEmail(DEMO_EMAIL);
+    setPassword(DEMO_PASSWORD);
+    await signIn(DEMO_EMAIL, DEMO_PASSWORD);
+  };
+
+  const signIn = async (email: string, password: string) => {
     setError(null);
     setLoading(true);
 
@@ -146,6 +159,15 @@ function LoginPageInner() {
               className="mt-2 h-10 w-full bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
             >
               {loading ? t('signingIn') : t('signIn')}
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              disabled={loading}
+              onClick={handleTryDemo}
+              className="h-10 w-full disabled:opacity-50"
+            >
+              {loading ? t('tryDemoLoading') : t('tryDemo')}
             </Button>
           </form>
 

@@ -12,10 +12,12 @@
     "signingIn": "Signing in...",
     "signIn": "Sign in",
     "noAccount": "Don't have an account?",
-    "createAccount": "Create account"
+    "createAccount": "Create account",
+    "tryDemo": "Try demo",
+    "tryDemoLoading": "Loading demo..."
   },
   "Sidebar": {
-    "title": "CRM Template for WhatsApp",
+    "title": "Selora CRM",
     "dashboard": "Dashboard",
     "inbox": "Inbox",
     "notifications": "Notifications",
