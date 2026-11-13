@@ -4,6 +4,7 @@ import type { Deal, PipelineStage } from "@/types";
 import { Calendar, Check, X } from "lucide-react";
 import { formatCurrency } from "@/lib/currency";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/hooks/use-auth";
 
 interface DealCardProps {
   deal: Deal;
@@ -28,6 +29,8 @@ function initials(name?: string, fallback?: string) {
 
 export function DealCard({ deal, stage, onEdit, isOverlay }: DealCardProps) {
   const t = useTranslations("Pipelines.card");
+  // Money always shows in the account currency (Settings → Deals), not the deal's stored one.
+  const { defaultCurrency } = useAuth();
   const contactLabel = deal.contact?.name || deal.contact?.phone || t("noContact");
   const assigneeLabel = deal.assignee?.full_name || null;
 
@@ -41,16 +44,15 @@ export function DealCard({ deal, stage, onEdit, isOverlay }: DealCardProps) {
         e.stopPropagation();
         onEdit(deal);
       }}
-      className={`group relative w-full cursor-pointer rounded-xl border border-border/50 bg-muted/70 pl-4 pr-3 py-3 text-left shadow-sm transition-all ${
-        isOverlay
-          ? "shadow-xl"
-          : "hover:-translate-y-0.5 hover:border-border hover:bg-muted hover:shadow-lg"
+      className={`k-card group relative w-full pl-4 text-left ${
+        isOverlay ? "is-dragging" : ""
       }`}
+      style={{ marginBottom: 0 }}
     >
       {/* 4px left accent bar using stage color */}
       <span
         aria-hidden
-        className="absolute left-0 top-0 h-full w-1 rounded-l-xl"
+        className="absolute left-0 top-0 h-full w-[3px] rounded-l-md"
         style={{ backgroundColor: stage?.color ?? "#94a3b8" }}
       />
 
@@ -82,7 +84,7 @@ export function DealCard({ deal, stage, onEdit, isOverlay }: DealCardProps) {
 
       <div className="mt-2 flex items-center justify-between">
         <span className="text-sm font-bold text-primary">
-          {formatCurrency(deal.value, deal.currency)}
+          {formatCurrency(deal.value, defaultCurrency)}
         </span>
         {deal.expected_close_date && (
           <span className="flex items-center gap-1 text-[11px] text-muted-foreground">

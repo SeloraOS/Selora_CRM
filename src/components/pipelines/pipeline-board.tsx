@@ -211,19 +211,12 @@ function StageColumn({
     // restore the flex-1 share-the-row behavior. The droppable ref is
     // on the inner messages region below — intentionally NOT here, so
     // a drag over the column header doesn't highlight the whole column.
-    <div className="flex w-[85vw] min-w-[260px] max-w-[320px] shrink-0 snap-start flex-col rounded-xl border border-border bg-card/60 p-4 lg:w-auto lg:max-w-none lg:flex-1 lg:basis-[260px] lg:shrink lg:snap-none">
-      {/* 3px colored top border — sits above the column's padding */}
-      <div
-        className="-mx-4 -mt-4 h-[3px] rounded-t-xl"
-        style={{ backgroundColor: stage.color }}
-      />
-      <div className="flex items-center justify-between pt-3">
-        <h3 className="truncate text-sm font-semibold text-foreground">
-          {stage.name}
-        </h3>
-        <span className="shrink-0 rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
-          {deals.length}
-        </span>
+    <div className="flex w-[85vw] min-w-[260px] max-w-[320px] shrink-0 snap-start flex-col k-col p-3 lg:w-auto lg:max-w-none lg:flex-1 lg:basis-[260px] lg:shrink lg:snap-none">
+      {/* PMS-style header: color dot, title, count chip */}
+      <div className="flex items-center gap-2">
+        <span className="k-col__dot shrink-0" style={{ backgroundColor: stage.color }} />
+        <h3 className="k-col__title truncate">{stage.name}</h3>
+        <span className="k-col__count">{deals.length}</span>
       </div>
       <p className="text-xs text-muted-foreground">
         {formatCurrency(totalValue, currency)}
@@ -238,7 +231,7 @@ function StageColumn({
         }`}
       >
         {deals.length === 0 ? (
-          <div className="flex flex-1 items-center justify-center rounded-lg border-2 border-dashed border-border py-10 text-xs text-muted-foreground">
+          <div className="flex flex-1 items-center justify-center rounded-md border border-dashed border-border py-10 text-xs text-muted-foreground">
             {t("dropDealHere")}
           </div>
         ) : (

@@ -86,7 +86,7 @@ export function DealForm({
     if (deal) {
       setTitle(deal.title);
       setValue(String(deal.value ?? ""));
-      setCurrency(deal.currency || defaultCurrency);
+      setCurrency(defaultCurrency);
       // contact_id is nullable when the contact has been deleted
       // (migration 004: ON DELETE SET NULL). "" means "no selection".
       setContactId(deal.contact_id ?? "");
@@ -313,6 +313,8 @@ export function DealForm({
                 <Label className="text-muted-foreground">{t("currency")}</Label>
                 <select
                   value={currency}
+                  disabled
+                  title={t("currencyFromSettings")}
                   onChange={(e) => setCurrency(e.target.value)}
                   className="h-9 w-full rounded-lg border border-border bg-muted px-2.5 text-sm text-foreground outline-none focus:border-primary"
                 >

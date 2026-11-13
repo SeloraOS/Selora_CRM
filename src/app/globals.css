@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+@import "../components/kit/kit.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -84,65 +85,116 @@
  * project/Color Themes.html — change one, change the other.
  * ============================================================ */
 
-/* ---- MODE: neutral surfaces ---- */
+/* ---- MODE: neutral surfaces ----
+ * Values are the Selora PMS palette (same hex), exposed twice:
+ *   - PMS variable names (--bg-color, --card-bg, --border-color, ...) used by the kit (components/kit/kit.css)
+ *   - shadcn tokens (--background, --card, --border, ...) mapped onto them, so every existing
+ *     shadcn component picks up the PMS look without being rewritten. */
 
 :root,
 html[data-mode="dark"] {
-  --background: oklch(0.13 0.01 260);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.18 0.01 260);
-  --card-2: oklch(0.205 0.01 260);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.18 0.01 260);
-  --popover-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.22 0.01 260);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.22 0.01 260);
-  --muted-foreground: oklch(0.65 0.01 260);
-  --accent: oklch(0.22 0.01 260);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.28 0.01 260);
-  --input: oklch(0.28 0.01 260);
+  color-scheme: dark;
+  --bg-color: #0f0f0f;
+  --card-bg: #171717;
+  --control-bg: #171717;
+  --text-color: #f8f8f8;
+  --heading-color: #ffffff;
+  --text-muted: #9ca3af;
+  --text-light: #d1d5db;
+  --border-color: #2b2b2b;
+  --divider-color: #232323;
+  --surface-gray-1: #141414;
+  --surface-gray-2: #1c1c1c;
+  --surface-gray-3: #232323;
+  --surface-gray-4: #2b2b2b;
+  --gray-400: #6b7280;
+  --st-blue-bg: rgba(59, 130, 246, 0.16);  --st-blue-fg: #7ab8ff;
+  --st-green-bg: rgba(34, 197, 94, 0.16);  --st-green-fg: #5fd38d;
+  --st-amber-bg: rgba(245, 158, 11, 0.16); --st-amber-fg: #f5b942;
+  --st-red-bg: rgba(239, 68, 68, 0.16);    --st-red-fg: #ff8a8a;
+
+  --background: var(--bg-color);
+  --foreground: var(--text-color);
+  --card: var(--card-bg);
+  --card-2: var(--surface-gray-2);
+  --card-foreground: var(--text-color);
+  --popover: var(--card-bg);
+  --popover-foreground: var(--text-color);
+  --secondary: var(--surface-gray-2);
+  --secondary-foreground: var(--text-color);
+  --muted: var(--surface-gray-2);
+  --muted-foreground: var(--text-muted);
+  --accent: var(--surface-gray-2);
+  --accent-foreground: var(--text-color);
+  --destructive: #ef4444;
+  --border: var(--border-color);
+  --input: var(--border-color);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.16 0.01 260);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.22 0.01 260);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(0.28 0.01 260);
+  --radius: 0.5rem;
+  --sidebar: var(--bg-color);
+  --sidebar-foreground: var(--text-color);
+  --sidebar-accent: var(--surface-gray-2);
+  --sidebar-accent-foreground: var(--text-color);
+  --sidebar-border: var(--border-color);
 }
 
 html[data-mode="light"] {
-  --background: oklch(0.99 0.002 260);
-  --foreground: oklch(0.21 0.01 260);
-  --card: oklch(1 0 0);
-  --card-2: oklch(0.985 0.002 260);
-  --card-foreground: oklch(0.21 0.01 260);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.21 0.01 260);
-  --secondary: oklch(0.967 0.003 260);
-  --secondary-foreground: oklch(0.25 0.01 260);
-  --muted: oklch(0.967 0.003 260);
-  --muted-foreground: oklch(0.52 0.015 260);
-  --accent: oklch(0.96 0.004 260);
-  --accent-foreground: oklch(0.25 0.01 260);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0.004 260);
-  --input: oklch(0.922 0.004 260);
+  color-scheme: light;
+  --bg-color: #ffffff;
+  --card-bg: #ffffff;
+  --control-bg: #ffffff;
+  --text-color: #1a1a1a;
+  --heading-color: #111111;
+  --text-muted: #6b7280;
+  --text-light: #374151;
+  --border-color: #e5e7eb;
+  --divider-color: #f3f4f6;
+  --surface-gray-1: #f9fafb;
+  --surface-gray-2: #f3f4f6;
+  --surface-gray-3: #e5e7eb;
+  --surface-gray-4: #d1d5db;
+  --gray-400: #9ca3af;
+  --st-blue-bg: #eff6ff;  --st-blue-fg: #1d4ed8;
+  --st-green-bg: #f0fdf4; --st-green-fg: #15803d;
+  --st-amber-bg: #fffbeb; --st-amber-fg: #b45309;
+  --st-red-bg: #fef2f2;   --st-red-fg: #b91c1c;
+
+  --background: var(--bg-color);
+  --foreground: var(--text-color);
+  --card: var(--card-bg);
+  --card-2: var(--surface-gray-1);
+  --card-foreground: var(--text-color);
+  --popover: var(--card-bg);
+  --popover-foreground: var(--text-color);
+  --secondary: var(--surface-gray-2);
+  --secondary-foreground: var(--text-light);
+  --muted: var(--surface-gray-2);
+  --muted-foreground: var(--text-muted);
+  --accent: var(--surface-gray-2);
+  --accent-foreground: var(--text-light);
+  --destructive: #ef4444;
+  --border: var(--border-color);
+  --input: var(--border-color);
   --chart-2: oklch(0.6 0.1 260);
   --chart-3: oklch(0.7 0.06 260);
   --chart-4: oklch(0.8 0.04 260);
   --chart-5: oklch(0.87 0.03 260);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0.002 260);
-  --sidebar-foreground: oklch(0.21 0.01 260);
-  --sidebar-accent: oklch(0.96 0.004 260);
-  --sidebar-accent-foreground: oklch(0.25 0.01 260);
-  --sidebar-border: oklch(0.922 0.004 260);
+  --radius: 0.5rem;
+  --sidebar: #f4f5f7;
+  --sidebar-foreground: var(--text-color);
+  --sidebar-accent: var(--surface-gray-3);
+  --sidebar-accent-foreground: var(--text-color);
+  --sidebar-border: var(--border-color);
+}
+
+/* Kit aliases: the kit reads --primary-fg / --primary-ring; derive them from the accent. */
+:root,
+html[data-theme] {
+  --primary-fg: var(--primary-foreground);
+  --primary-ring: color-mix(in oklab, var(--ring) 35%, transparent);
 }
 
 /* ---- ACCENT: primary color ---- */

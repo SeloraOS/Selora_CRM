@@ -73,6 +73,7 @@ export function PipelineSettings({
   const supabase = createClient();
 
   const [name, setName] = useState(pipeline.name);
+  const [isLead, setIsLead] = useState(!!pipeline.is_lead_pipeline);
   const [localStages, setLocalStages] = useState<PipelineStage[]>(stages);
   const [newStageName, setNewStageName] = useState("");
   const [newStageColor, setNewStageColor] = useState(STAGE_COLORS[0]);
@@ -86,6 +87,7 @@ export function PipelineSettings({
   useEffect(() => {
     if (!open) return;
     setName(pipeline.name);
+    setIsLead(!!pipeline.is_lead_pipeline);
     setLocalStages([...stages].sort((a, b) => a.position - b.position));
     setShowDeleteConfirm(false);
   }, [open, pipeline, stages]);
@@ -118,10 +120,31 @@ export function PipelineSettings({
       position: i,
     }));
 
+    // Only touch `is_lead_pipeline` when it changed, so saving still works on a database
+    // that has not had migration 041 applied yet.
+    const leadChanged = isLead !== !!pipeline.is_lead_pipeline;
+    if (leadChanged && isLead) {
+      // Only one lead pipeline per account (unique index): clear the old one first.
+      const { error: clearErr } = await supabase
+        .from("pipelines")
+        .update({ is_lead_pipeline: false })
+        .eq("is_lead_pipeline", true)
+        .neq("id", pipeline.id);
+      if (clearErr) {
+        setSaving(false);
+        toast.error(t("toastLeadNeedsMigration"));
+        return;
+      }
+    }
+
     const [renameRes, stagesRes] = await Promise.all([
       supabase
         .from("pipelines")
-        .update({ name: name.trim() })
+        .update(
+          leadChanged
+            ? { name: name.trim(), is_lead_pipeline: isLead }
+            : { name: name.trim() },
+        )
         .eq("id", pipeline.id),
       supabase.from("pipeline_stages").upsert(stageRows, { onConflict: "id" }),
     ]);
@@ -247,6 +270,19 @@ export function PipelineSettings({
                   className="border-border bg-muted text-foreground"
                 />
               </div>
+
+              <label className="flex items-start gap-2.5 rounded-lg border border-border bg-muted/40 p-3 text-sm">
+                <input
+                  type="checkbox"
+                  className="k-check mt-0.5"
+                  checked={isLead}
+                  onChange={(e) => setIsLead(e.target.checked)}
+                />
+                <span>
+                  <span className="font-medium text-foreground">{t("useForLeads")}</span>
+                  <span className="mt-0.5 block text-xs text-muted-foreground">{t("useForLeadsDesc")}</span>
+                </span>
+              </label>
 
               <div className="grid gap-2">
                 <Label className="text-muted-foreground">{t("stages")}</Label>

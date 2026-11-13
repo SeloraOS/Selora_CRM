@@ -16,6 +16,12 @@ interface UseRealtimeOptions {
   onMessageEvent?: (event: RealtimeEvent<Message>) => void;
   onConversationEvent?: (event: RealtimeEvent<Conversation>) => void;
   enabled?: boolean;
+  /**
+   * Optional: only receive events for this conversation (messages with this
+   * `conversation_id`, and the conversation row itself). Omit for the Inbox's
+   * account-wide behaviour (unchanged).
+   */
+  conversationId?: string;
 }
 
 export function useRealtime({
@@ -23,6 +29,7 @@ export function useRealtime({
   onMessageEvent,
   onConversationEvent,
   enabled = true,
+  conversationId,
 }: UseRealtimeOptions) {
   const channelRef = useRef<RealtimeChannel | null>(null);
   const [isConnected, setIsConnected] = useState(false);
@@ -48,7 +55,12 @@ export function useRealtime({
       .channel(channelName)
       .on(
         "postgres_changes",
-        { event: "*", schema: "public", table: "messages" },
+        {
+          event: "*",
+          schema: "public",
+          table: "messages",
+          ...(conversationId ? { filter: `conversation_id=eq.${conversationId}` } : {}),
+        },
         (payload) => {
           onMessageRef.current?.({
             eventType: payload.eventType as RealtimeEvent<Message>["eventType"],
@@ -59,7 +71,12 @@ export function useRealtime({
       )
       .on(
         "postgres_changes",
-        { event: "*", schema: "public", table: "conversations" },
+        {
+          event: "*",
+          schema: "public",
+          table: "conversations",
+          ...(conversationId ? { filter: `id=eq.${conversationId}` } : {}),
+        },
         (payload) => {
           onConversationRef.current?.({
             eventType: payload.eventType as RealtimeEvent<Conversation>["eventType"],
@@ -79,7 +96,7 @@ export function useRealtime({
       channelRef.current = null;
       setIsConnected(false);
     };
-  }, [channelName, enabled]);
+  }, [channelName, enabled, conversationId]);
 
   const unsubscribe = useCallback(() => {
     if (channelRef.current) {

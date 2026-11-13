@@ -113,7 +113,23 @@ export interface Contact {
   /** Hydrated by queries that embed `contact_tags(tags(*))` (e.g. the
    *  Inbox conversation list, for tag filtering). Absent otherwise. */
   tags?: Tag[];
+
+  // ---- Lead fields (migration 041). Absent/null until that migration is applied. ----
+  /** Lead owner — a `profiles.id` (same id space as `deals.assigned_to`). */
+  owner_id?: string | null;
+  /** Lead status: a stage of the account's lead pipeline (`pipelines.is_lead_pipeline`). */
+  lead_stage_id?: string | null;
+  source?: string | null;
+  priority?: LeadPriority | null;
+  /** yyyy-mm-dd */
+  follow_up_date?: string | null;
+  /** CRM-LEAD-YYYY-00001, assigned by a DB trigger. */
+  lead_code?: string | null;
+  converted_deal_id?: string | null;
+  converted_at?: string | null;
 }
+
+export type LeadPriority = 'low' | 'medium' | 'high' | 'urgent';
 
 export interface Tag {
   id: string;
@@ -135,10 +151,18 @@ export interface CustomField {
   /** Tenancy key — NOT NULL since migration 017. */
   account_id: string;
   field_name: string;
+  /** One of CUSTOM_FIELD_TYPES; older rows only ever hold 'text'. */
   field_type: string;
+  /** For `select` fields: `{ options: string[] }`. */
   field_options?: Record<string, unknown>;
+  /** Group heading on the lead page ("Details", "Person", "More details", ...). Migration 041. */
+  section?: string;
+  position?: number;
   created_at: string;
 }
+
+export const CUSTOM_FIELD_TYPES = ['text', 'textarea', 'number', 'date', 'select'] as const;
+export type CustomFieldType = (typeof CUSTOM_FIELD_TYPES)[number];
 
 export interface ContactCustomValue {
   id: string;
@@ -152,6 +176,46 @@ export interface ContactNote {
   contact_id: string;
   user_id: string;
   note_text: string;
+  created_at: string;
+}
+
+export interface LeadTask {
+  id: string;
+  account_id: string;
+  contact_id: string;
+  title: string;
+  notes?: string | null;
+  due_at?: string | null;
+  assigned_to?: string | null;
+  status: 'todo' | 'done';
+  completed_at?: string | null;
+  created_by?: string | null;
+  created_at: string;
+}
+
+export interface LeadCall {
+  id: string;
+  account_id: string;
+  contact_id: string;
+  direction: 'inbound' | 'outbound';
+  outcome?: string | null;
+  duration_seconds?: number | null;
+  notes?: string | null;
+  called_at: string;
+  logged_by?: string | null;
+  created_at: string;
+}
+
+export type ContactEventType = 'comment' | 'status_changed' | 'owner_changed' | 'converted';
+
+export interface ContactEvent {
+  id: string;
+  account_id: string;
+  contact_id: string;
+  type: ContactEventType;
+  actor_id?: string | null;
+  /** comment: `{ text }`; status/owner: `{ from, to }`; converted: `{ deal_id, deal_title }`. */
+  data: Record<string, unknown>;
   created_at: string;
 }
 
@@ -352,6 +416,8 @@ export interface Pipeline {
   id: string;
   user_id: string;
   name: string;
+  /** When true this pipeline's stages are the lead status list (migration 041). */
+  is_lead_pipeline?: boolean;
   created_at: string;
 }
 

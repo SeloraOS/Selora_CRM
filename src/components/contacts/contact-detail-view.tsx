@@ -724,7 +724,7 @@ export function ContactDetailView({
                             <DollarSign className="size-3" />
                             {formatCurrency(
                               deal.value ?? 0,
-                              deal.currency || defaultCurrency,
+                              defaultCurrency,
                             )}
                           </span>
                           {deal.status && deal.status !== 'open' && (
